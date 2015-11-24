@@ -6,11 +6,14 @@
   <artifactId>basic-streaming</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>basic-streaming</name>
+  <name>Basic Streaming App</name>
   <url>http://maven.apache.org</url>
 
   <properties>
+    <app.main.class>com.ievgenp.streaming.ReceiverBased</app.main.class>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <scala.version>2.10.4</scala.version>
+    <spark.version>1.5.2</spark.version>
   </properties>
 
   <distributionManagement>
@@ -42,6 +45,24 @@
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-kafka_2.10</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.10</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_2.10</artifactId>
+      <version>${spark.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
