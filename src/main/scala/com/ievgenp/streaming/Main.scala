@@ -1,22 +1,25 @@
+package com.ievgenp.streaming
+
 import org.apache.spark._
 import org.apache.spark.streaming._
-
-import org.apache.spark.streaming.StreamingContext._ // try to remove this
+import org.apache.spark.streaming.kafka._
 
 object ReceiverBased {
   def main(args: Array[String]) {
-    val conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount")
-    val ssc = new StreamingContext(conf, Seconds(10))
+    if (args.length < 4) System.exit(1)
 
-    val lines = ssc.socketTextStream("localhost", 9999)
+    val Array(zkQuorum, group, topics, numThreads) = args
+    val sparkConf = new SparkConf().setAppName("ReceiverBasedStreamingApp")
+    val streamingContext = new StreamingContext(sparkConf, Seconds(5))
 
-    val words = lines.flatMap(_.split(" "))
-    val pairs = words.map(word => (word, 1))
-    val wordCounts = pairs.reduceByKey(_ + _)
+    streamingContext.checkpoint("checkpoint")
 
-    wordCounts.print()
+    val topicMap = topics.split(",").map((_, numThreads.toInt)).toMap
+    val lines = KafkaUtils.createStream(streamingContext, zkQuorum, group, topicMap).map(_._2)
 
-    ssc.start()
-    ssc.awaitTermination()
+    lines.print()
+
+    streamingContext.start()
+    streamingContext.awaitTermination()
   }
 }
