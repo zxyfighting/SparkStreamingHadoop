@@ -8,8 +8,8 @@ object ReceiverBased {
   def main(args: Array[String]) {
     if (args.length < 4) System.exit(1)
 
-    val Array(zkQuorum, group, topics, numThreads) = args
-    val sparkConf = new SparkConf().setAppName("ReceiverBasedStreamingApp")
+    val Array(zkQuorum, group, master, topics, numThreads) = args
+    val sparkConf = new SparkConf().setMaster(master).setAppName("ReceiverBasedStreamingApp")
     val streamingContext = new StreamingContext(sparkConf, Seconds(5))
 
     streamingContext.checkpoint("checkpoint")
