@@ -6,7 +6,7 @@ import org.apache.spark.streaming.kafka._
 
 object ReceiverBased {
   def main(args: Array[String]) {
-    if (args.length < 4) System.exit(1)
+    if (args.length < 5) System.exit(1)
 
     val Array(zkQuorum, group, master, topics, numThreads) = args
     val sparkConf = new SparkConf().setMaster(master).setAppName("ReceiverBasedStreamingApp")
