@@ -23,7 +23,7 @@ object ReceiverBased {
 
     lines.print()
 
-    sys.ShutdownHookThread {
+    sys.addShutdownHook {
       Log.info("Goodbye.")
       streamingContext.stop(true, true)
     }
