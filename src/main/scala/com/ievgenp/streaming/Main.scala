@@ -22,6 +22,7 @@ object ReceiverBased {
     val lines = KafkaUtils.createStream(streamingContext, zkQuorum, group, topicMap).map(_._2)
 
     lines.print()
+    lines.saveAsTextFiles("lines.txt")
 
     sys.addShutdownHook (() => {
       Log.info("Goodbye.")
