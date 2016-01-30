@@ -13,11 +13,15 @@ class HadoopWriter(outputFile: String) {
   private val encoding = "UTF-8"
   private val bufferSize = 8192
 
+  /**
+   * Writes data to a file on a Hadoop filesystem.
+   *
+   * @param data Data to write to a file.
+   */
   def save(data: String): Unit = {
     val dataln = data + "\n"
 
     if (hdfs.exists(hdfsOutputFilePath)) append else write
-    hdfs.close()
 
     def append(): Unit = {
       val os = hdfs.append(hdfsOutputFilePath, bufferSize, new ProgressWriter)
@@ -35,4 +39,9 @@ class HadoopWriter(outputFile: String) {
       writer.close()
     }
   }
+
+  /**
+   * Closes filesystem.
+   */
+  def closeFileSystem(): Unit = hdfs.close()
 }
