@@ -1,0 +1,38 @@
+package com.eugen.streaming
+
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
+
+import org.apache.hadoop.conf._
+import org.apache.hadoop.fs._
+
+class HadoopWriter(outputFile: String) {
+  private val conf = new Configuration()
+  private val hdfs = FileSystem.get(conf)
+  private val hdfsOutputFilePath = new Path(outputFile)
+  private val encoding = "UTF-8"
+  private val bufferSize = 8192
+
+  def save(data: String): Unit = {
+    val dataln = data + "\n"
+
+    if (hdfs.exists(hdfsOutputFilePath)) append else write
+    hdfs.close()
+
+    def append(): Unit = {
+      val os = hdfs.append(hdfsOutputFilePath, bufferSize, new ProgressWriter)
+      val writer = new BufferedWriter(new OutputStreamWriter(os, encoding))
+
+      writer.write(dataln)
+      writer.close()
+    }
+
+    def write(): Unit = {
+      val os = hdfs.create(hdfsOutputFilePath, new ProgressWriter)
+      val writer = new BufferedWriter(new OutputStreamWriter(os, encoding))
+
+      writer.write(dataln)
+      writer.close()
+    }
+  }
+}
