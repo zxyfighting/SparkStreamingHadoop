@@ -21,7 +21,7 @@ object SparkStreamingHadoop {
         c.copy(master = x) } required()
       opt[String]('t', "topics") action { (x, c) =>
         c.copy(topics = x) } required()
-      opt[String]('t', "threads") action { (x, c) =>
+      opt[String]('n', "threads") action { (x, c) =>
         c.copy(numThreads = x) } required()
       opt[String]('f', "output-file") action { (x, c) =>
         c.copy(outputFile = x) } required()
