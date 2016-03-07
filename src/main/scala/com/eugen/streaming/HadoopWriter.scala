@@ -7,32 +7,50 @@ import org.apache.hadoop.conf._
 import org.apache.hadoop.fs._
 
 class HadoopWriter(outputFile: String) {
+  private val conf = new Configuration()
+  private val hdfs = FileSystem.get(conf)
+  private val hdfsOutputFilePath = new Path(outputFile)
+  private val encoding = "UTF-8"
+
   /**
-   * Writes data to a file on a Hadoop filesystem.
+   * Determines whether the file with given path exists or not.
+   */
+  def fileExists: Boolean = hdfs.exists(hdfsOutputFilePath)
+
+  /**
+   * Writes a line specified to a file on a Hadoop filesystem.
    *
    * @param data Data to write to a file.
    */
-  def save(data: String): Unit = {
-    val dataln = data + "\n"
+  def writeLine(data: String): Unit = {
+    def saveFSDataOutputStream(fsDataOutputStream: FSDataOutputStream): Unit = {
+      val outputStreamWriter = new OutputStreamWriter(fsDataOutputStream, encoding)
+      val bufferedWriter = new BufferedWriter(outputStreamWriter)
 
-    val conf = new Configuration()
-    val hdfs = FileSystem.get(conf)
-    val hdfsOutputFilePath = new Path(outputFile)
-    val encoding = "UTF-8"
-    val bufferSize = 8192
+      bufferedWriter.write(s"${ data }\n")
+      bufferedWriter.close()
 
-    def outputStream = {
-      if (hdfs.exists(hdfsOutputFilePath))
-        hdfs.append(hdfsOutputFilePath, bufferSize, new ProgressWriter)
-      else
-        hdfs.create(hdfsOutputFilePath, new ProgressWriter)
+      outputStreamWriter.close()
+      fsDataOutputStream.close()
     }
 
-    val writer = new BufferedWriter(new OutputStreamWriter(outputStream, encoding))
+    def append: Unit = {
+      val fsDataOutputStream = hdfs.append(hdfsOutputFilePath)
 
-    writer.write(dataln)
-    writer.close()
+      saveFSDataOutputStream(fsDataOutputStream)
+    }
 
-    hdfs.close()
+    def create: Unit = {
+      val fsDataOutputStream = hdfs.create(hdfsOutputFilePath)
+
+      saveFSDataOutputStream(fsDataOutputStream)
+    }
+
+    if (fileExists) append else create
   }
+
+  /**
+   * Closes filesystem.
+   */
+  def closeFileSystem: Unit = hdfs.close()
 }

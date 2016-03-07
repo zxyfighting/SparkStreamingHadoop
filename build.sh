@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+set -e
 mvn clean package
-mv target/basic-streaming-1.0-SNAPSHOT.jar snapshot/basic-streaming-1.0-SNAPSHOT.jar
+mv target/spark-streaming-hadoop-1.0-SNAPSHOT.jar snapshot/
