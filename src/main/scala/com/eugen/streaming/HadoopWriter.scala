@@ -11,7 +11,6 @@ class HadoopWriter(outputFile: String) {
   private val hdfs = FileSystem.get(conf)
   private val hdfsOutputFilePath = new Path(outputFile)
   private val encoding = "UTF-8"
-  private val bufferSize = 8192
 
   /**
    * Determines whether the file with given path exists or not.

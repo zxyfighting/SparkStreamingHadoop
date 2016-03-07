@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.eugen.streaming</groupId>
-  <artifactId>basic-streaming</artifactId>
+  <artifactId>spark-streaming-hadoop</artifactId>
   <name>Basic Streaming App</name>
   <version>1.0-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
@@ -83,6 +83,14 @@
       <id>scala-tools.org</id>
       <name>Scala-tools Maven2 Repository</name>
       <url>http://scala-tools.org/repo-releases</url>
+    </repository>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots />
+      <id>oss.sonatype.org-snapshot</id>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
   <pluginRepositories>
@@ -269,6 +277,12 @@
       <version>1.5.2</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.scopt</groupId>
+      <artifactId>scopt_2.10</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <distributionManagement>
     <snapshotRepository>
@@ -280,6 +294,7 @@
   <properties>
     <scala.version>2.10.4</scala.version>
     <app.main.class>com.eugen.streaming.SparkStreamingHadoop</app.main.class>
+    <scopt.version>3.1.0</scopt.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spark.version>1.5.2</spark.version>
   </properties>

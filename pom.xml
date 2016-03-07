@@ -3,7 +3,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.eugen.streaming</groupId>
-  <artifactId>basic-streaming</artifactId>
+  <artifactId>spark-streaming-hadoop</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>Basic Streaming App</name>
@@ -14,6 +14,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <scala.version>2.10.4</scala.version>
     <spark.version>1.5.2</spark.version>
+    <scopt.version>3.1.0</scopt.version>
   </properties>
 
   <distributionManagement>
@@ -25,11 +26,24 @@
   </distributionManagement>
 
   <repositories>
+
     <repository>
       <id>scala-tools.org</id>
       <name>Scala-tools Maven2 Repository</name>
       <url>http://scala-tools.org/repo-releases</url>
     </repository>
+
+    <repository>
+      <id>oss.sonatype.org-snapshot</id>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+
   </repositories>
 
   <pluginRepositories>
@@ -62,6 +76,12 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming_2.10</artifactId>
       <version>${spark.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.scopt</groupId>
+      <artifactId>scopt_2.10</artifactId>
+      <version>${scopt.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
