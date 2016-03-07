@@ -7,6 +7,12 @@ import org.apache.hadoop.conf._
 import org.apache.hadoop.fs._
 
 class HadoopWriter(outputFile: String) {
+  private val conf = new Configuration()
+  private val hdfs = FileSystem.get(conf)
+  private val hdfsOutputFilePath = new Path(outputFile)
+  private val encoding = "UTF-8"
+  private val bufferSize = 8192
+
   /**
    * Writes data to a file on a Hadoop filesystem.
    *
@@ -15,24 +21,27 @@ class HadoopWriter(outputFile: String) {
   def save(data: String): Unit = {
     val dataln = data + "\n"
 
-    val conf = new Configuration()
-    val hdfs = FileSystem.get(conf)
-    val hdfsOutputFilePath = new Path(outputFile)
-    val encoding = "UTF-8"
-    val bufferSize = 8192
+    if (hdfs.exists(hdfsOutputFilePath)) append else write
 
-    def outputStream = {
-      if (hdfs.exists(hdfsOutputFilePath))
-        hdfs.append(hdfsOutputFilePath, bufferSize, new ProgressWriter)
-      else
-        hdfs.create(hdfsOutputFilePath, new ProgressWriter)
+    def append(): Unit = {
+      val os = hdfs.append(hdfsOutputFilePath, bufferSize, new ProgressWriter)
+      val writer = new BufferedWriter(new OutputStreamWriter(os, encoding))
+
+      writer.write(dataln)
+      writer.close()
     }
 
-    val writer = new BufferedWriter(new OutputStreamWriter(outputStream, encoding))
+    def write(): Unit = {
+      val os = hdfs.create(hdfsOutputFilePath, new ProgressWriter)
+      val writer = new BufferedWriter(new OutputStreamWriter(os, encoding))
 
-    writer.write(dataln)
-    writer.close()
-
-    hdfs.close()
+      writer.write(dataln)
+      writer.close()
+    }
   }
+
+  /**
+   * Closes filesystem.
+   */
+  def closeFileSystem(): Unit = hdfs.close()
 }

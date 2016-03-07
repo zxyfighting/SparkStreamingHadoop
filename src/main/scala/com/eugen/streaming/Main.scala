@@ -17,19 +17,25 @@ object ReceiverBased {
     val streamingContext = new StreamingContext(sparkConf, Seconds(1))
     val topicMap = topics.split(",").map((_, numThreads.toInt)).toMap
 
+    val hadoopWriter = new HadoopWriter(outputFile)
+
     val lines = KafkaUtils.createStream(streamingContext, zkQuorum, group, topicMap).map(_._2)
 
-    lines.foreachRDD(s => s.collect().foreach(new HadoopWriter(outputFile).save(_)))
+    lines.foreachRDD(s => s.collect().foreach(hadoopWriter.save(_)))
 
     log.info("DEBUG info:" + zkQuorum)
 
-    sys.addShutdownHook(onShutdown(streamingContext))
+    sys.addShutdownHook(onShutdown(streamingContext, hadoopWriter))
 
     streamingContext.start()
     streamingContext.awaitTermination()
   }
 
-  private def onShutdown(sc: StreamingContext): Unit = {
+  private def onShutdown(sc: StreamingContext, hadoopWriter: HadoopWriter): Unit = {
+    log.info("Closing filesystem...")
+    hadoopWriter.closeFileSystem
+    log.info("Done.")
+
     log.info("Stopping streaming context...")
     sc.stop(true, true)
     log.info("Done. Goodbye.")
