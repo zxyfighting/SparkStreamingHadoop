@@ -279,7 +279,7 @@
   </distributionManagement>
   <properties>
     <scala.version>2.10.4</scala.version>
-    <app.main.class>com.eugen.streaming.ReceiverBased</app.main.class>
+    <app.main.class>com.eugen.streaming.SparkStreamingHadoop</app.main.class>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spark.version>1.5.2</spark.version>
   </properties>

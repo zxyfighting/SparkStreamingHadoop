@@ -14,34 +14,44 @@ class HadoopWriter(outputFile: String) {
   private val bufferSize = 8192
 
   /**
-   * Writes data to a file on a Hadoop filesystem.
+   * Determines whether the file with given path exists or not.
+   */
+  def fileExists: Boolean = hdfs.exists(hdfsOutputFilePath)
+
+  /**
+   * Writes a line specified to a file on a Hadoop filesystem.
    *
    * @param data Data to write to a file.
    */
-  def save(data: String): Unit = {
-    val dataln = data + "\n"
+  def writeLine(data: String): Unit = {
+    def saveFSDataOutputStream(fsDataOutputStream: FSDataOutputStream): Unit = {
+      val outputStreamWriter = new OutputStreamWriter(fsDataOutputStream, encoding)
+      val bufferedWriter = new BufferedWriter(outputStreamWriter)
 
-    if (hdfs.exists(hdfsOutputFilePath)) append else write
+      bufferedWriter.write(s"${ data }\n")
+      bufferedWriter.close()
 
-    def append(): Unit = {
-      val os = hdfs.append(hdfsOutputFilePath, bufferSize, new ProgressWriter)
-      val writer = new BufferedWriter(new OutputStreamWriter(os, encoding))
-
-      writer.write(dataln)
-      writer.close()
+      outputStreamWriter.close()
+      fsDataOutputStream.close()
     }
 
-    def write(): Unit = {
-      val os = hdfs.create(hdfsOutputFilePath, new ProgressWriter)
-      val writer = new BufferedWriter(new OutputStreamWriter(os, encoding))
+    def append: Unit = {
+      val fsDataOutputStream = hdfs.append(hdfsOutputFilePath)
 
-      writer.write(dataln)
-      writer.close()
+      saveFSDataOutputStream(fsDataOutputStream)
     }
+
+    def create: Unit = {
+      val fsDataOutputStream = hdfs.create(hdfsOutputFilePath)
+
+      saveFSDataOutputStream(fsDataOutputStream)
+    }
+
+    if (fileExists) append else create
   }
 
   /**
    * Closes filesystem.
    */
-  def closeFileSystem(): Unit = hdfs.close()
+  def closeFileSystem: Unit = hdfs.close()
 }
