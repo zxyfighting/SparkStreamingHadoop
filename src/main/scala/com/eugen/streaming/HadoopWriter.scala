@@ -15,7 +15,7 @@ class HadoopWriter(outputFile: String) {
   /**
    * Determines whether the file with given path exists or not.
    */
-  def fileExists: Boolean = hdfs.exists(hdfsOutputFilePath)
+  def fileExists(): Boolean = hdfs.exists(hdfsOutputFilePath)
 
   /**
    * Writes a line specified to a file on a Hadoop filesystem.
@@ -34,23 +34,23 @@ class HadoopWriter(outputFile: String) {
       fsDataOutputStream.close()
     }
 
-    def append: Unit = {
+    def append(): Unit = {
       val fsDataOutputStream = hdfs.append(hdfsOutputFilePath)
 
       saveFSDataOutputStream(fsDataOutputStream)
     }
 
-    def create: Unit = {
+    def create(): Unit = {
       val fsDataOutputStream = hdfs.create(hdfsOutputFilePath)
 
       saveFSDataOutputStream(fsDataOutputStream)
     }
 
-    if (fileExists) append else create
+    if (fileExists()) append() else create()
   }
 
   /**
    * Closes filesystem.
    */
-  def closeFileSystem: Unit = hdfs.close()
+  def closeFileSystem(): Unit = hdfs.close()
 }
