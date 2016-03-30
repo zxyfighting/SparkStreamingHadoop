@@ -7,4 +7,4 @@ $SPARK_HOME/bin/spark-submit \
     --master local[2] \
     --topics test \
     --threads 2 \
-    --output-file lines-out.txt
+    --output-file /user/hdfs/data/pitching.out
