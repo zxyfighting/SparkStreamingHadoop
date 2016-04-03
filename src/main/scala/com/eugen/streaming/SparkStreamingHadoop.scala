@@ -4,7 +4,6 @@ import org.apache.log4j.Logger
 import org.apache.spark._
 import org.apache.spark.streaming._
 import org.apache.spark.streaming.kafka._
-import org.apache.spark.sql.hive.HiveContext
 
 object SparkStreamingHadoop {
   private val log = Logger.getLogger(SparkStreamingHadoop.this.getClass().getSimpleName())
@@ -37,7 +36,6 @@ object SparkStreamingHadoop {
           .setAppName("SparkStreamingHadoop")
 
         val streamingContext = new StreamingContext(sparkConf, intervalBetweenRDDs)
-        val sqlContext = new HiveContext(streamingContext.sparkContext)
 
         val topicMap = config
           .topics
@@ -51,14 +49,7 @@ object SparkStreamingHadoop {
           .map(_._2)
 
 
-        lines.foreachRDD { rdd =>
-          rdd.saveAsTextFile(config.outputFile)
-
-          sqlContext.sql("CREATE TABLE IF NOT EXISTS pitching (playerId INT, yearId STRING)")
-          sqlContext.sql(s"LOAD DATA LOCAL INPATH '${ config.outputFile }' INTO TABLE pitching")
-
-          sqlContext.sql("FROM pitching SELECT playerId, yearId").collect().foreach(println)
-        }
+        lines.foreachRDD(_.saveAsTextFile(config.outputFile))
 
         sys.addShutdownHook(onShutdown(streamingContext, hadoopWriter))
 
