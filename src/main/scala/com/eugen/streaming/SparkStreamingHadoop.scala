@@ -48,11 +48,9 @@ object SparkStreamingHadoop {
           .createStream(streamingContext, config.zookeeperQuorum, config.consumerGroup, topicMap)
           .map(_._2)
 
-        lines.foreachRDD { rdd =>
-          if (!rdd.isEmpty) {
-            rdd.foreach(line => hadoopWriter.writeLine(line))
-          }
-        }
+        lines.foreachRDD(rdd => rdd
+          .collect()
+          .foreach(line => hadoopWriter.writeLine(line)))
 
         sys.addShutdownHook(onShutdown(streamingContext, hadoopWriter))
 
